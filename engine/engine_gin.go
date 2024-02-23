@@ -8,6 +8,17 @@ import (
 	"strings"
 )
 
+/*
+Gin 引擎初始化
+Build Mek
+time 20240223
+	常见路由组挂载
+	首页定义
+	404处理
+	一级路由处理
+	重定向声明
+*/
+
 var Engine = gin.Default()
 
 type RouteMountTable map[string]func()
@@ -28,6 +39,10 @@ func init() {
 		c.File("static/img/favicon.ico")
 	})
 
+	// 拓展方法挂载
+	Engine.POST("/Login", Login)
+	Engine.GET("/Logout", Logout)
+
 	// 拦截404
 	Engine.NoRoute(func(c *gin.Context) {
 		// 返回404状态码和一条消息
@@ -45,6 +60,7 @@ func init() {
 	Engine.Any("/html/*path", Unified)
 	Engine.Any("/Api/*path", Unified)
 	Engine.Any("/Html/*path", Unified)
+	Engine.Any("/control/*path", Unified)
 
 }
 
@@ -61,13 +77,15 @@ func Unified(c *gin.Context) {
 	switch parts[0] {
 	case "Api":
 		fallthrough
-	case "api":
+	case "api": // 集中返回式式路由
 		c.JSON(http.StatusOK, routing.ApiProcessor(c, parts, method))
 	case "Html":
 		fallthrough
 	case "html":
 		response, template := routing.HtmlProcessor(c, parts, method)
 		c.HTML(http.StatusOK, template, response)
+	case "control": // 自由返回式路由
+		routing.Api2(c, parts, method)
 	}
 
 }

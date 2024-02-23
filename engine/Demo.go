@@ -1,5 +1,11 @@
 package engine
 
+/*
+常见功能写法参考
+Build Mek
+time 20240223
+*/
+
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
