@@ -47,6 +47,9 @@ func Logout(c *gin.Context) {
 }
 
 func UploadFile(c *gin.Context) {
+	/*
+		文件上传
+	*/
 	// 从请求中获取文件
 	file, err := c.FormFile("file")
 	if err != nil {

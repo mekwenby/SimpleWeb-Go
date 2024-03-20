@@ -26,7 +26,8 @@ func HtmlProcessor(request *gin.Context, paths []string, method string) (respons
 		return nil, "BASE.html"
 	case "docs":
 		return nil, "docs.html"
-
+	case "login":
+		return nil, "User_login.html"
 	default:
 		return nil, "login.html"
 	}
