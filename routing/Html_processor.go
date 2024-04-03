@@ -28,7 +28,15 @@ func HtmlProcessor(request *gin.Context, paths []string, method string) (respons
 		return nil, "docs.html"
 	case "login":
 		return nil, "User_login.html"
+	case "demo":
+		if len(paths) >= 3 {
+			return nil, HtmlDemo(paths[2])
+		}
+		return nil, "BASE.html"
 	default:
 		return nil, "login.html"
 	}
+}
+func HtmlDemo(path string) (template string) {
+	return path + ".html"
 }

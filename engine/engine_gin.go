@@ -61,10 +61,11 @@ func init() {
 	Engine.Any("/Api/*path", Unified)
 	Engine.Any("/Html/*path", Unified)
 	Engine.Any("/control/*path", Unified)
-
+	Engine.Any("/Majestic/*path", Unified)
 }
 
 func Unified(c *gin.Context) {
+	// 统一路由处理函数
 	// 请求路径
 	path := c.Request.URL.Path
 	// 请求主体对象
@@ -86,6 +87,8 @@ func Unified(c *gin.Context) {
 		c.HTML(http.StatusOK, template, response)
 	case "control": // 自由返回式路由
 		routing.Api2(c, parts, method)
+	case "Majestic":
+		routing.Majestic(c, parts, method)
 	}
 
 }
