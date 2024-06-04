@@ -16,7 +16,7 @@ func init() {
 	Engine = CreateEngine()
 }
 func CreateEngine() *xorm.Engine {
-	engine, err := xorm.NewEngine("sqlite3", "DB.db")
+	engine, err := xorm.NewEngine("sqlite3", "image.db")
 	if err != nil {
 		panic(err)
 	}

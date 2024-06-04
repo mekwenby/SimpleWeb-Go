@@ -6,7 +6,11 @@ Build Mek
 time 20240223
 */
 
-import "github.com/gin-gonic/gin"
+import (
+	"SimpleWeb/databases"
+	"github.com/gin-gonic/gin"
+	"strings"
+)
 
 // HtmlProcessor 静态模板路由
 func HtmlProcessor(request *gin.Context, paths []string, method string) (response gin.H, template string) {
@@ -20,19 +24,13 @@ func HtmlProcessor(request *gin.Context, paths []string, method string) (respons
 	*/
 	switch paths[1] {
 	// 选择式路由
-	case "test":
-		return nil, "index.html"
-	case "base":
-		return nil, "BASE.html"
-	case "docs":
-		return nil, "docs.html"
-	case "login":
-		return nil, "User_login.html"
-	case "demo":
-		if len(paths) >= 3 {
-			return nil, HtmlDemo(paths[2])
+	case "view":
+		id := request.Query("id")
+		imageFileList := databases.GetImageFileList(id)
+		for i := range imageFileList {
+			imageFileList[i].Filepath = strings.ReplaceAll(imageFileList[i].Filepath, "\\", "/")
 		}
-		return nil, "BASE.html"
+		return gin.H{"id": id, "list": imageFileList}, "view.html"
 	default:
 		return nil, "login.html"
 	}
