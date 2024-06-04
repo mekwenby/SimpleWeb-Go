@@ -37,9 +37,10 @@ func ApiProcessor(request *gin.Context, paths []string, method string) (response
 	case "version": // 获取版本信息
 		info := databases.GetVersionInfo()
 		return gin.H{
-			"status":  true,
-			"version": info.Version,
-			"verify":  info.Verify,
+			"status":     true,
+			"version":    info.Version,
+			"verify":     info.Verify,
+			"imageTotal": databases.GetImageTotal(),
 		}
 
 	case "copy":

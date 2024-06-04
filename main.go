@@ -14,7 +14,7 @@ func main() {
 	// databases.SyncTable()
 	tools.Logo_Slabt("ImageBrowser")
 	// "8086 启动端口号"
-	fmt.Printf("http://127.0.0.1:%v", startPort)
+	fmt.Printf("http://127.0.0.1:%v\n", *startPort)
 	hostAddr := ":" + strconv.Itoa(*startPort)
 	err := engine.Engine.Run(hostAddr)
 	if err != nil {

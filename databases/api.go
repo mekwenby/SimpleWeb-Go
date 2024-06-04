@@ -34,3 +34,9 @@ func GetStartIndex() Index {
 	Engine.Asc("id").Limit(1).Get(&index)
 	return index
 }
+
+// GetImageTotal 获取索引总数
+func GetImageTotal() (count int64) {
+	count, _ = Engine.Count(new(Index))
+	return count
+}
