@@ -42,7 +42,6 @@ func GetAllFiles(dir string) ([]string, error) {
 }
 
 func BuildFileAssembly() {
-	var images []Image
 	var err error
 	_, err = Engine.Where("1=1").Delete(new(Image))
 	_, err = Engine.Where("1=1").Delete(new(Index))
@@ -56,13 +55,11 @@ func BuildFileAssembly() {
 			Filename: fileName,
 			Filepath: fileList[i],
 		}
-		images = append(images, *file)
+		_, err = Engine.Insert(file)
 
 	}
-	_, err = Engine.Insert(&images)
 
 	var filesId []string
-	var indexs []Index
 	err = Engine.Table(new(Image)).Select("DISTINCT id").Find(&filesId)
 	if err != nil {
 		log.Fatalf("Failed to query data: %v", err)
@@ -72,10 +69,10 @@ func BuildFileAssembly() {
 			Id:    int64(i + 1),
 			Index: filesId[i],
 		}
-		indexs = append(indexs, *index)
+		_, err = Engine.Insert(index)
 
 	}
-	_, err = Engine.Insert(indexs)
+
 }
 
 func CopyFile(srcPath, dstPath string) error {
