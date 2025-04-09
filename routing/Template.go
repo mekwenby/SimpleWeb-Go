@@ -8,7 +8,7 @@ import (
 func Template(request *gin.Context, paths []string, method string) {
 	switch paths[1] {
 	case "index":
-		request.HTML(http.StatusOK, "MajesticAdmin.html", nil)
+		request.HTML(http.StatusOK, "index.html", nil)
 
 	}
 

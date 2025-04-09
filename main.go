@@ -1,6 +1,7 @@
 package main
 
 import (
+	"SimpleWeb/configs"
 	"SimpleWeb/databases"
 	"SimpleWeb/engine"
 	"SimpleWeb/tools"
@@ -13,7 +14,7 @@ func main() {
 	startPort := flag.Int("port", 8086, "启动端口")
 	startMode := flag.String("mode", "Server", "启动模式")
 	flag.Parse()
-
+	configs.Mode = *startMode
 	// 创建数据表
 	if *startMode == "sync" {
 		fmt.Println("同步结构体到数据库...")

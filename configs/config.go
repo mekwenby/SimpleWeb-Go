@@ -6,3 +6,4 @@ package configs
 
 // PasswdKey 密码加密密钥
 var PasswdKey = "$#%^&*I(O"
+var Mode = ""

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context 信息</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .info-block {
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .info-block h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        pre {
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<h1>你请求的页面不存在</h1>
+<h1>gin.Context 信息</h1>
+
+<div class="info-block">
+    <h2>请求方法与路径</h2>
+    <p><strong>Method:</strong> {{.method}}</p>
+    <p><strong>Path:</strong> {{.path}}</p>
+</div>
+
+<div class="info-block">
+    <h2>请求头</h2>
+    <pre>{{.headers}}</pre>
+</div>
+
+<div class="info-block">
+    <h2>查询参数</h2>
+    <pre>{{.queryParams}}</pre>
+</div>
+
+<div class="info-block">
+    <h2>表单数据</h2>
+    <pre>{{.postForm}}</pre>
+</div>
+
+<div class="info-block">
+    <h2>请求体</h2>
+    <pre>{{.requestBody}}</pre>
+</div>
+
+<div class="info-block">
+    <h2>请求时间</h2>
+    <p>{{.requestTime}}</p>
+</div>
+
+</body>
+</html>
