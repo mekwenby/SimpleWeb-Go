@@ -8,8 +8,8 @@ time 20240223
 
 import (
 	"SimpleWeb/databases"
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"strings"
 )
 
 // ApiProcessor API路由
@@ -24,41 +24,52 @@ func ApiProcessor(request *gin.Context, paths []string, method string) (response
 	*/
 
 	switch paths[1] {
-	case "sync": // 重构数据库
-		databases.CreateVersion()
-		databases.BuildFileAssembly()
-		info := databases.GetVersionInfo()
-		return gin.H{
-			"status":  true,
-			"version": info.Version,
-			"verify":  info.Verify,
-		}
-
-	case "version": // 获取版本信息
-		info := databases.GetVersionInfo()
-		return gin.H{
-			"status":     true,
-			"version":    info.Version,
-			"verify":     info.Verify,
-			"imageTotal": databases.GetImageTotal(),
-		}
-
-	case "copy":
+	case "NewUser": // 创建用户
 		if method == "POST" {
-			id := request.PostForm("id")
-			imageFileList := databases.GetImageFileList(id)
-			for i := range imageFileList {
-				imageFileList[i].Filepath = strings.ReplaceAll(imageFileList[i].Filepath, "\\", "/")
+			// 从POST表单获取参数
+			name := request.PostForm("name")
+			passwd := request.PostForm("passwd")
+			user, err := databases.CreateUser(name, passwd)
+			if err != nil {
+				return gin.H{"status": false, "err": err}
 			}
-			go databases.AutoCopy(imageFileList)
-			return gin.H{"method": method, "id": id, "list": imageFileList}
-		} else {
-			return gin.H{"Err": "请求方式不正确!"}
+			return gin.H{
+				"status": true, "user": user,
+			}
 		}
-
+		return gin.H{"status": false, "method": method}
+	case "UserOn": // 用户登录
+		// 从POST表单获取参数
+		if method == "POST" {
+			name := request.PostForm("name")
+			passwd := request.PostForm("passwd")
+			user, err := databases.VerifyPassword(name, passwd)
+			if err != nil {
+				return gin.H{"status": false, "err": err}
+			}
+			request.SetCookie("token", user.Token, 60*60*24*3, "/", "", false, true)
+			return gin.H{
+				"status": true, "user": user,
+			}
+		}
+		return gin.H{"status": false, "method": method}
+	case "TokenOn": // 验证Token
+		token, _ := request.Cookie("token")
+		fmt.Println(token)
+		user, err := databases.VerifyToken(token)
+		if err != nil {
+			return gin.H{"status": false, "err": err}
+		}
+		return gin.H{
+			"status": true, "user": user,
+		}
+	// 路由匹配失败时
 	default:
 		return gin.H{
-			"path": "api",
+			"path":    paths,                                      // 获取访问的完整路由
+			"host":    request.Request.Host,                       // 获取用户的主机地址
+			"message": "没有该路由!,There is no such route available!", // 自定义消息
+			"method":  method,
 		}
 	}
 

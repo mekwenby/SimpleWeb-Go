@@ -2,6 +2,8 @@ package databases
 
 /*
 数据库引擎
+链接数据库服务使用
+具体使用方法参考reference示例
 */
 
 import (
@@ -16,7 +18,7 @@ func init() {
 	Engine = CreateEngine()
 }
 func CreateEngine() *xorm.Engine {
-	engine, err := xorm.NewEngine("sqlite3", "image.db")
+	engine, err := xorm.NewEngine("sqlite3", "sqlite3.db")
 	if err != nil {
 		panic(err)
 	}

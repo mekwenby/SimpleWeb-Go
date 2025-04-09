@@ -7,7 +7,7 @@ time 20240223
 */
 
 import (
-	"SimpleWeb/databases"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strings"
 )
@@ -25,16 +25,10 @@ func HtmlProcessor(request *gin.Context, paths []string, method string) (respons
 	switch paths[1] {
 	// 选择式路由
 	case "view":
-		id := request.Query("id")
-		imageFileList := databases.GetImageFileList(id)
-		for i := range imageFileList {
-			imageFileList[i].Filepath = strings.ReplaceAll(imageFileList[i].Filepath, "\\", "/")
-		}
-		return gin.H{"id": id, "list": imageFileList}, "view.html"
+		return gin.H{}, "view.html"
 	default:
-		return nil, "login.html"
+		templateName := strings.Join(paths[1:], ".html")
+		fmt.Println(templateName)
+		return nil, templateName
 	}
-}
-func HtmlDemo(path string) (template string) {
-	return path + ".html"
 }

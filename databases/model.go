@@ -1,10 +1,7 @@
 package databases
 
 import (
-	"crypto/sha1"
-	"encoding/hex"
 	"fmt"
-	"log"
 	"time"
 )
 
@@ -13,63 +10,21 @@ import (
 xorm reverse sqlite3 test.db "" ./models
 */
 
-type Image struct {
-	Id       string `xorm:"index VARCHAR(255)"`
-	Filename string `xorm:"VARCHAR(255)"`
-	Filepath string `xorm:"VARCHAR(255)"`
-}
-
-type Version struct {
-	Id      int    `xorm:"not null pk INTEGER"`
-	Version string `xorm:"VARCHAR(10)"`
-	Verify  string `xorm:"VARCHAR(255)"`
-}
-
-type Index struct {
-	Id    int64  `xorm:"'id' pk autoincr"`
-	Index string `xorm:"VARCHAR(255)"`
+type User struct {
+	ID        int64     `xorm:"pk autoincr"`             // 主键并自增
+	Username  string    `xorm:"unique notnull"`          // 用户名
+	Password  string    `xorm:"notnull"`                 // 密码
+	Token     string    `xorm:"index"`                   // 登录 token，可选字段
+	UserType  string    `xorm:"notnull default('user')"` // 用户类型，默认是 'user'
+	Data      string    `xorm:"notnull"`                 // 用户数据（JSON 或其他格式）
+	IsDeleted bool      `xorm:"notnull default(false)"`
+	Created   time.Time `xorm:"created"` // 创建时间，由 XORM 自动填充
+	Updated   time.Time `xorm:"updated"` // 更新时间，由 XORM 自动更新
 }
 
 func SyncTable() {
-	err := Engine.Sync2(new(Image))
+	err := Engine.Sync2(new(User))
 	if err != nil {
-		fmt.Println("Image 同步错误:", err)
+		fmt.Println("User 同步错误:", err)
 	}
-	err2 := Engine.Sync2(new(Version))
-	if err2 != nil {
-		fmt.Println("Version 同步错误:", err)
-	}
-	err3 := Engine.Sync2(new(Index))
-	if err3 != nil {
-		fmt.Println("Index 同步错误:", err)
-	}
-}
-
-func GetTimeFtm() (timed string) {
-	// 获取当前时间
-	now := time.Now()
-
-	// 格式化当前时间为YYYYMMDDHMS
-	formattedTime := now.Format("20060102150405")
-
-	return formattedTime
-}
-func hashSHA1(s string) string {
-	h := sha1.New()
-	h.Write([]byte(s))
-	return hex.EncodeToString(h.Sum(nil))
-}
-func CreateVersion() {
-	_, err := Engine.Where("1=1").Delete(new(Version))
-	if err != nil {
-		log.Fatalf("Failed to delete records: %v", err)
-	}
-	versionNo := GetTimeFtm()
-	v := &Version{
-		Id:      0,
-		Version: versionNo,
-		Verify:  hashSHA1(versionNo),
-	}
-	Engine.Insert(v)
-
 }

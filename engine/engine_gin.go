@@ -40,8 +40,8 @@ func init() {
 	})
 
 	// 拓展方法挂载
-	Engine.POST("/Login", Login)
-	Engine.GET("/Logout", Logout)
+	// Engine.POST("/Login", Login)
+	// Engine.GET("/Logout", Logout)
 
 	// 拦截404
 	Engine.NoRoute(func(c *gin.Context) {
@@ -61,7 +61,7 @@ func init() {
 	Engine.Any("/Api/*path", Unified)
 	Engine.Any("/Html/*path", Unified)
 	Engine.Any("/control/*path", Unified)
-	Engine.Any("/Majestic/*path", Unified)
+	Engine.Any("/template/*path", Unified)
 }
 
 func Unified(c *gin.Context) {
@@ -78,17 +78,17 @@ func Unified(c *gin.Context) {
 	switch parts[0] {
 	case "Api":
 		fallthrough
-	case "api": // 集中返回式式路由
+	case "api": // Api集中返回式路由
 		c.JSON(http.StatusOK, routing.ApiProcessor(c, parts, method))
 	case "Html":
 		fallthrough
-	case "html":
+	case "html": //模板集中返回式路由
 		response, template := routing.HtmlProcessor(c, parts, method)
 		c.HTML(http.StatusOK, template, response)
-	case "control": // 自由返回式路由
-		routing.Api2(c, parts, method)
-	case "Majestic":
-		routing.Majestic(c, parts, method)
+	case "control": // Api自由返回式路由
+		routing.Control(c, parts, method)
+	case "template": // 模板自由返回式路由
+		routing.Template(c, parts, method)
 	}
 
 }
