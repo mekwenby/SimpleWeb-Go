@@ -23,7 +23,7 @@ func main() {
 	// 打印Logo
 	tools.Logo_Slabt("SimpleWeb")
 	// "8086 启动端口号"
-	fmt.Printf("%v:http://127.0.0.1:%v\n", databases.GetCurrentTime(), *startPort)
+	fmt.Printf("%v:http://127.0.0.1:%v\nRun Mode %v", databases.GetCurrentTime(), *startPort, *startMode)
 	hostAddr := ":" + strconv.Itoa(*startPort)
 	err := engine.Engine.Run(hostAddr)
 	if err != nil {
