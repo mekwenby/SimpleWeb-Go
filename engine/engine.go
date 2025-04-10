@@ -36,7 +36,7 @@ func init() {
 
 	// 定义首页图标
 	Engine.GET("/favicon.ico", func(c *gin.Context) {
-		c.File("static/img/favicon.ico")
+		c.File("static/img/Golang.svg")
 	})
 
 	// 拓展方法挂载

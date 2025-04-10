@@ -19,11 +19,12 @@ func main() {
 	if *startMode == "sync" {
 		fmt.Println("同步结构体到数据库...")
 		databases.SyncTable()
+		return
 	}
 	// 打印Logo
 	tools.Logo_Slabt("SimpleWeb")
 	// "8086 启动端口号"
-	fmt.Printf("%v:http://127.0.0.1:%v\nRun Mode %v", databases.GetCurrentTime(), *startPort, *startMode)
+	fmt.Printf("%v:http://127.0.0.1:%v\nRun Mode %v \n", databases.GetCurrentTime(), *startPort, *startMode)
 	hostAddr := ":" + strconv.Itoa(*startPort)
 	err := engine.Engine.Run(hostAddr)
 	if err != nil {
