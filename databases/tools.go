@@ -12,6 +12,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -52,10 +53,11 @@ func GenerateToken(username string) (string, error) {
 		"typ": "JWT",
 	}
 
+	tokenExp := &configs.TokenExp
 	// 2. 构建 Payload
 	payload := map[string]interface{}{
 		"username": username,
-		"exp":      time.Now().Add(time.Hour * 72).Unix(), // 设置过期时间为 3 天
+		"exp":      time.Now().Add(time.Hour * time.Duration(*tokenExp)).Unix(), // 设置过期时间
 	}
 
 	// 3. 将 Header 和 Payload 转为 JSON 字符串并编码为 Base64
@@ -87,4 +89,54 @@ func createSignature(data string, secret string) string {
 	h.Write([]byte(data))
 	signature := h.Sum(nil)
 	return Base64UrlEncode(signature)
+}
+
+func VerifyToken(token string) (map[string]interface{}, error) {
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("无效的 token 格式")
+	}
+
+	encodedHeader := parts[0]
+	encodedPayload := parts[1]
+	providedSignature := parts[2]
+
+	// 1. 重新计算签名并验证
+	dataToVerify := encodedHeader + "." + encodedPayload
+	expectedSignature := createSignature(dataToVerify, configs.PasswdKey)
+	if providedSignature != expectedSignature {
+		return nil, fmt.Errorf("签名不合法")
+	}
+
+	// 2. 解码 payload
+	payloadJSON, err := Base64UrlDecode(encodedPayload)
+	if err != nil {
+		return nil, fmt.Errorf("payload 解码失败: %v", err)
+	}
+
+	var payload map[string]interface{}
+	if err := json.Unmarshal(payloadJSON, &payload); err != nil {
+		return nil, fmt.Errorf("payload JSON 解析失败: %v", err)
+	}
+
+	// 3. 检查是否过期
+	if expVal, ok := payload["exp"]; ok {
+		switch exp := expVal.(type) {
+		case float64: // JSON number 默认解析为 float64
+			if time.Now().Unix() > int64(exp) {
+				return nil, fmt.Errorf("token 已过期")
+			}
+		default:
+			return nil, fmt.Errorf("exp 字段格式不正确")
+		}
+	}
+
+	return payload, nil
+}
+func Base64UrlDecode(s string) ([]byte, error) {
+	// 添加丢失的 padding
+	if m := len(s) % 4; m != 0 {
+		s += strings.Repeat("=", 4-m)
+	}
+	return base64.URLEncoding.DecodeString(s)
 }

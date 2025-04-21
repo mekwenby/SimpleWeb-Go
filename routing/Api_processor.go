@@ -7,6 +7,7 @@ time 20240223
 */
 
 import (
+	"SimpleWeb/configs"
 	"SimpleWeb/databases"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -47,7 +48,9 @@ func ApiProcessor(request *gin.Context, paths []string, method string) (response
 			if err != nil {
 				return gin.H{"status": false, "err": err}
 			}
-			request.SetCookie("token", user.Token, 60*60*24*3, "/", "", false, true)
+
+			maxAge := configs.TokenExp * 3600
+			request.SetCookie("token", user.Token, maxAge, "/", "", false, true)
 			return gin.H{
 				"status": true, "user": user,
 			}
@@ -56,12 +59,12 @@ func ApiProcessor(request *gin.Context, paths []string, method string) (response
 	case "TokenOn": // 验证Token
 		token, _ := request.Cookie("token")
 		fmt.Println(token)
-		user, err := databases.VerifyToken(token)
+		userTokenInfo, err := databases.VerifyToken(token)
 		if err != nil {
 			return gin.H{"status": false, "err": err}
 		}
 		return gin.H{
-			"status": true, "user": user,
+			"status": true, "userTokenInfo": userTokenInfo,
 		}
 	// 路由匹配失败时
 	default:

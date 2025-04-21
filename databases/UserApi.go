@@ -78,15 +78,16 @@ func VerifyPassword(username, password string) (*User, error) {
 	return user, nil
 }
 
-// VerifyToken 验证Token
-func VerifyToken(token string) (*User, error) {
+// FormTokenGetName 验证Token
+func FormTokenGetName(token string) (map[string]interface{}, *User, error) {
 	var user User
 	_, err := Engine.Where("token=?", token).Get(&user)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if user.ID == 0 {
-		return nil, fmt.Errorf("无效的 Token")
+		return nil, nil, fmt.Errorf("无效的 Token")
 	}
-	return &user, nil
+	userName, err := VerifyToken(token)
+	return userName, &user, nil
 }
